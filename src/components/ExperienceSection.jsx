@@ -13,7 +13,7 @@ const experiences = [
   {
     company: "Healthletic Lifestyle",
     role: "Android Developer Intern",
-    period: "Jun 2025 – Present · 2 mos",
+    period: "Jun 2025 – July 2025 · 2 mos",
     location: "Bengaluru, Karnataka, India · Remote",
     description: `Working as an Android Developer Intern building user-centric mobile applications. Responsible for Flutter development, Node.js backend, and collaborating with cross-functional teams.`,
     skills: ["Flutter", "Node.js", "Team Management", "Mobile Dev", "GitHub", "Android Studio", "UX", "Project Management", "Communication"]

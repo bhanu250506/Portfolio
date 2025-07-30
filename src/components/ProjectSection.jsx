@@ -5,6 +5,7 @@ import { ArrowRight, ExternalLink, Github } from "lucide-react";
 import prepImage from '../assets/prep.png';
 import chatImage from '../assets/chat.png';
 import blogImage from '../assets/Blog.png';
+import auraImage from '../assets/chat211.png'
 
 
 
@@ -25,37 +26,49 @@ const InteractiveParticleBackground = () => (
 );
 
 const projects = [
-  {
-    id: 1,
-    title: "PrepAI - AI Interview Platform",
-    description:
-      "An intelligent learning platform to revolutionize technical interview preparation using the Google Gemini API.",
-    tags: ["React", "Node.js", "Express.js", "MongoDB", "Gemini API"],
-    githubUrl: "https://github.com/bhanu250506/Interview_question",
-    imageUrl: prepImage,
-    demoUrl: null,
-  },
-  {
-    id: 2,
-    title: "MERN Stack Chat App",
-    description:
-      "A feature-rich, real-time 1-to-1 chat application built with the MERN stack and Socket.io.",
-    tags: ["React", "Node.js", "Socket.io", "MongoDB","Express.js" ],
-    githubUrl: "https://github.com/bhanu250506/chat_app",
-    imageUrl: chatImage,
-    demoUrl: null,
-  },
-  {
-    id: 3,
-    title: "Full-Stack Blog App",
-    description:
-      "A secure, full-stack blog platform allowing users to create and manage their own blogs with JWT authentication.",
-    tags: ["React", "Spring Boot", "Java", "JWT", "MySQL"],
-    githubUrl: "https://github.com/bhanu250506/Blog-Application",
-    imageUrl: blogImage,
-    demoUrl: null,
-  },
+  {
+    id: 1,
+    title: "PrepAI - AI Interview Platform",
+    description:
+      "An intelligent learning platform to revolutionize technical interview preparation using the Google Gemini API.",
+    tags: ["React", "Node.js", "Express.js", "MongoDB", "Gemini API"],
+    githubUrl: "https://github.com/bhanu250506/Interview_question",
+    imageUrl: prepImage,
+   demoUrl: null,
+  },
+  {
+    id: 2,
+    title: "MERN Stack Chat App",
+    description:
+      "A feature-rich, real-time 1-to-1 chat application built with the MERN stack and Socket.io.",
+    tags: ["React", "Node.js", "Socket.io", "MongoDB","Express.js" ],
+    githubUrl: "https://github.com/bhanu250506/chat_app",
+    imageUrl: chatImage,
+    demoUrl: null,
+  },
+  {
+    id: 3,
+    title: "Full-Stack Blog App",
+    description:
+      "A secure, full-stack blog platform allowing users to create and manage their own blogs with JWT authentication.",
+    tags: ["React", "Spring Boot", "Java", "JWT", "MySQL"],
+    githubUrl: "https://github.com/bhanu250506/Blog-Application",
+    imageUrl: blogImage,
+    demoUrl: null,
+  },
+  // New entry for Aura Chatbot
+  {
+    id: 4,
+    title: "Aura - AI Mental Health Chatbot",
+    description:
+      "A full-stack, AI-powered mobile application designed to be a safe, supportive, and non-judgmental space for users.",
+    tags: ["Flutter", "Node.js", "Express.js", "MongoDB", "Gemini API"],
+    githubUrl: "https://github.com/bhanu250506/Mental_health_app",
+    imageUrl: auraImage, // <-- Make sure to import this image variable
+    demoUrl: null,
+  }
 ];
+
 
 const ProjectsSection = () => {
   return (
