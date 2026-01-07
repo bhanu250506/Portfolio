@@ -93,7 +93,7 @@ export const AboutSection = () => {
                 <a href="https://linkedin.com/in/bhanupratapsn" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/20">
                   <Linkedin className="w-4 h-4" /> LinkedIn
                 </a>
-                <a href="https://drive.google.com/file/d/1j3xL5-CwZ5jGs7jE_ykQvfsIt1pC0a16/view" target="_blank" className="flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-white text-slate-300 hover:text-white rounded-lg font-medium transition-all">
+                <a href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" target="_blank" className="flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-white text-slate-300 hover:text-white rounded-lg font-medium transition-all">
                   <FileText className="w-4 h-4" /> Resume
                 </a>
               </div>

@@ -180,7 +180,7 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <a href="https://drive.google.com/file/d/1j3xL5-CwZ5jGs7jE_ykQvfsIt1pC0a16/view" target="_blank" rel="noreferrer" className="block h-full">
+            <a href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" target="_blank" rel="noreferrer" className="block h-full">
               <SpotlightCard className="p-6 group hover:border-orange-500/30 transition-all h-full">
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-lg bg-orange-500/10 text-orange-400">

@@ -372,3 +372,11 @@ html, body, #root {
     @apply bg-background text-foreground font-sans antialiased;
   }
 }
+
+body {
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #100c2d; 
+  color: white;
+  scroll-behavior: smooth;
+}

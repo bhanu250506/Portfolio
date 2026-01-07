@@ -165,7 +165,7 @@ export const HeroSection = () => {
              <SocialPill href="https://linkedin.com/in/bhanupratapsn" icon={Linkedin} label="LinkedIn" />
              <SocialPill href="https://github.com/bhanu250506" icon={Github} label="GitHub" />
              <SocialPill href="https://leetcode.com/u/bhanupratap2556/" icon={Code} label="LeetCode" />
-             <SocialPill href="https://drive.google.com/file/d/1j3xL5-CwZ5jGs7jE_ykQvfsIt1pC0a16/view?usp=sharing" icon={FileText} label="Resume" />
+             <SocialPill href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" icon={FileText} label="Resume" />
           </div>
 
           {/* CTA Buttons */}
@@ -177,7 +177,7 @@ export const HeroSection = () => {
               View Work <ArrowRight className="w-4 h-4" />
             </a>
             <a 
-              href="https://drive.google.com/file/d/1j3xL5-CwZ5jGs7jE_ykQvfsIt1pC0a16/view?usp=sharing" 
+              href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" 
               className="px-8 py-4 rounded-full border border-slate-700 bg-slate-900/50 backdrop-blur-md text-white font-medium hover:border-indigo-500/50 hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" /> Download CV
