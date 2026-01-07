@@ -1,133 +1,187 @@
-import { Code, Briefcase } from "lucide-react";
-import { InteractiveParticleBackground } from "./InteractiveParticleBackground";
+import React, { useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { 
+  Terminal, Globe, Smartphone, Server, ShieldCheck, 
+  Linkedin, FileText, BrainCircuit, Zap 
+} from "lucide-react";
+
+const SpotlightCard = ({ children, className = "" }) => {
+  const divRef = useRef(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e) => {
+    if (!divRef.current) return;
+    const rect = divRef.current.getBoundingClientRect();
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  return (
+    <div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setOpacity(1)}
+      onMouseLeave={() => setOpacity(0)}
+      className={`relative rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm overflow-hidden ${className}`}
+    >
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(99,102,241,0.15), transparent 40%)`,
+        }}
+      />
+      <div className="relative h-full">{children}</div>
+    </div>
+  );
+};
 
 export const AboutSection = () => {
   return (
-    <section
-      id="about"
-      className="py-24 px-4 bg-background text-foreground relative overflow-hidden"
-    >
-      {/* Interactive Background */}
-      <div className="absolute inset-0 z-0">
-        <InteractiveParticleBackground />
-      </div>
+    // FIX: bg-transparent allows global background to show
+    <section id="about" className="py-32 px-4 relative bg-transparent">
+      <div className="container mx-auto max-w-6xl">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">
+            More Than Just <span className="text-indigo-400">Code</span>
+          </h2>
+         <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+  I focus on building <span className="text-white">secure, scalable systems</span> that perform
+  reliably in real-world production environments.
+</p>
 
-      <div className="container mx-auto max-w-5xl relative z-10">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center animate-fade-up">
-          About <span className="text-primary">Me</span>
-        </h2>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Left Text Block */}
-          <div className="space-y-6">
-            <h3 className="text-2xl font-semibold animate-fade-up-delay">
-              A Full-Stack Web & Android Developer
-            </h3>
-
-            <p className="text-lg text-muted-foreground animate-fade-up-delay">
-              I’m <strong>Bhanu</strong>, a passionate developer skilled in
-              building modern Web and Android applications using{" "}
-              <strong>React</strong>, <strong>Flutter</strong>,{" "}
-              <strong>Node.js</strong>, and <strong>Spring Boot</strong>. I
-              focus on clean architecture, responsive design, and
-              performance-optimized code.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-fade-up-delay">
-              <a
-                href="https://www.linkedin.com/in/bhanupratapsn/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-md hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-              >
-                Get In Touch
-              </a>
-
-              <a
-                href="https://app.luminpdf.com/viewer/6869119afa86e7d2c5dfd206"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-3 rounded-full border border-primary text-primary hover:bg-primary/10 transition-colors duration-300"
-              >
-                View Resume
-              </a>
-            </div>
-          </div>
-
-          {/* Right Cards */}
-          <div className="grid grid-cols-1 gap-6">
-            {/* Web Dev */}
-            <div className="p-6 rounded-2xl card hover:scale-105 transition-transform duration-300 group">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <Code className="h-6 w-6 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* Main Bio */}
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="md:col-span-2 h-full"
+          >
+            <SpotlightCard className="h-full p-8 flex flex-col justify-center">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+                  <Terminal className="w-8 h-8 text-indigo-400" />
                 </div>
-                <div>
-                  <h4 className="font-semibold text-lg mb-1">Web Development</h4>
-                  <p className="text-muted-foreground">
-                    Creating interactive and responsive websites using modern
-                    frameworks like React, Tailwind, and Next.js.
-                  </p>
-                </div>
+<h3 className="text-2xl font-bold text-white">
+  Full-Stack Engineering with a Security-First Mindset
+</h3>
               </div>
-            </div>
+            <p className="text-slate-400 leading-relaxed text-lg mb-6">
+  MySelf <strong className="text-white">Bhanu Pratap Singh</strong>, a full-stack developer with
+  <strong className="text-white"> over a year of hands-on experience</strong> building and securing
+  real-world applications.
+  <br /><br />
+  From crafting clean, responsive <strong className="text-white">React and Flutter</strong> interfaces
+  to designing scalable <strong className="text-white">Spring Boot</strong> backends, I focus on writing
+  code that is reliable, maintainable, and production-ready.
+  My background in <strong className="text-white">cyber security</strong> ensures security is built into
+  the system from the ground up — not added as an afterthought.
+</p>
 
-            {/* Android Dev */}
-            <div className="p-6 rounded-2xl card hover:scale-105 transition-transform duration-300 group">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 text-primary text-xl">
-                  🤖
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg mb-1">Android Development</h4>
-                  <p className="text-muted-foreground">
-                    Building mobile apps with Flutter that are fast, scalable,
-                    and visually consistent across Android and iOS platforms.
-                  </p>
-                </div>
+              
+              <div className="flex gap-4">
+                <a href="https://linkedin.com/in/bhanupratapsn" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all shadow-lg shadow-indigo-500/20">
+                  <Linkedin className="w-4 h-4" /> LinkedIn
+                </a>
+                <a href="https://drive.google.com/file/d/1j3xL5-CwZ5jGs7jE_ykQvfsIt1pC0a16/view" target="_blank" className="flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-white text-slate-300 hover:text-white rounded-lg font-medium transition-all">
+                  <FileText className="w-4 h-4" /> Resume
+                </a>
               </div>
-            </div>
+            </SpotlightCard>
+          </motion.div>
 
-            {/* Backend Dev */}
-            <div className="p-6 rounded-2xl card hover:scale-105 transition-transform duration-300 group">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20">
-                  <Briefcase className="h-6 w-6 text-primary" />
+          {/* Stats */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="md:col-span-1 h-full"
+          >
+            <SpotlightCard className="h-full p-8 flex flex-col justify-between bg-gradient-to-br from-slate-900/50 to-emerald-900/10">
+              <div>
+                 <div className="p-3 bg-emerald-500/10 w-fit rounded-xl border border-emerald-500/20 mb-6">
+                  <BrainCircuit className="w-8 h-8 text-emerald-400" />
                 </div>
-                <div>
-                  <h4 className="font-semibold text-lg mb-1">Backend Development</h4>
-                  <p className="text-muted-foreground">
-                    Creating scalable backend systems with{" "}
-                    <strong>Node.js</strong> and <strong>Spring Boot</strong>,
-                    RESTful APIs, and database integrations using MySQL and MongoDB.
-                  </p>
-                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Problem Solver</h3>
+                <p className="text-slate-400 text-sm">
+                  Logic sharper than syntax.
+                </p>
               </div>
-            </div>
-          </div>
+              
+              <div className="mt-8 pt-6 border-t border-slate-800">
+                 <div className="text-4xl font-extrabold text-white mb-1">500+</div>
+                 <div className="text-emerald-400 font-medium text-sm uppercase tracking-wider">DSA Problems</div>
+                 <div className="flex gap-2 mt-3">
+                   <span className="text-xs px-2 py-1 bg-slate-800 rounded text-slate-400">LeetCode</span>
+                   <span className="text-xs px-2 py-1 bg-slate-800 rounded text-slate-400">GFG</span>
+                 </div>
+              </div>
+            </SpotlightCard>
+          </motion.div>
+
+          {/* Quick Learner */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <SpotlightCard className="p-6 h-full group">
+              <div className="p-3 bg-orange-500/10 w-fit rounded-lg mb-4 group-hover:scale-110 transition-transform">
+                <Zap className="w-6 h-6 text-orange-400" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">Fast Adapter</h4>
+              <p className="text-slate-400 text-sm">
+                Thriving on new frameworks. I adapt to technology shifts instantly.
+              </p>
+            </SpotlightCard>
+          </motion.div>
+
+          {/* Full Stack */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <SpotlightCard className="p-6 h-full group">
+              <div className="p-3 bg-blue-500/10 w-fit rounded-lg mb-4 group-hover:scale-110 transition-transform">
+                <Globe className="w-6 h-6 text-blue-400" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">Full Stack</h4>
+              <p className="text-slate-400 text-sm">
+                Scalable <strong>React</strong> web apps & <strong>Flutter</strong> mobile solutions.
+              </p>
+            </SpotlightCard>
+          </motion.div>
+
+          {/* Security */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <SpotlightCard className="p-6 h-full group">
+              <div className="p-3 bg-cyan-500/10 w-fit rounded-lg mb-4 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-6 h-6 text-cyan-400" />
+              </div>
+              <h4 className="text-lg font-bold text-white mb-2">Cyber Security</h4>
+              <p className="text-slate-400 text-sm">
+                Patching vulnerabilities before deployment. OWASP & Pen-Testing.
+              </p>
+            </SpotlightCard>
+          </motion.div>
+
         </div>
       </div>
-
-      {/* Animations */}
-      <style jsx>{`
-        @keyframes fadeUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-up {
-          animation: fadeUp 0.8s ease-out both;
-        }
-        .animate-fade-up-delay {
-          animation: fadeUp 1s ease-out both;
-          animation-delay: 0.2s;
-        }
-      `}</style>
     </section>
   );
 };
