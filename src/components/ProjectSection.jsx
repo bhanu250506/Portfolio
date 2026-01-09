@@ -45,15 +45,14 @@ const projects = [
     category: "Full Stack • Spring Boot",
     description: "A scalable social blogging ecosystem. Features AI-assisted content generation, real-time chat rooms, and granular Role-Based Access Control (RBAC).",
     icon: <Layout className="w-6 h-6 text-orange-400" />,
-    tags: ["Java", "Spring Boot", "React", "MySQL", "Gemini AI", "Cloudinary", "WebSockets"],
+    tags: ["Java", "Spring Boot", "React", "MySQL", "Gemini AI", "WebSockets"],
     githubUrl: "https://github.com/bhanu250506/full_stack_blog/blob/main/README.md",
-    // demoUrl: "#", // Add if available
   },
   {
     id: 2,
     title: "JobFlow AI Suite",
     category: "Productivity • AI Engine",
-    description: "Intelligent career automation tool. Includes an ATS Resume Auditor to calculate score, automated cold emailing engine, and smart gap analysis.",
+    description: "Intelligent career automation tool. Includes an ATS Resume Auditor, automated cold emailing engine, and smart gap analysis.",
     icon: <Cpu className="w-6 h-6 text-cyan-400" />,
     tags: ["Node.js", "React", "MongoDB", "Gemini AI", "JWT", "nodemailer"],
     githubUrl: "https://github.com/bhanu250506/JobFlow/blob/main/README.md",
@@ -64,15 +63,15 @@ const projects = [
     category: "Mobile App • AI Therapy",
     description: "Privacy-focused wellness app. Uses context-aware AI for empathetic conversations, mood tracking, and secure data persistence.",
     icon: <Sparkles className="w-6 h-6 text-emerald-400" />,
-    tags: ["Flutter", "Express.js", "MongoDB", "Riverpod"],
+    tags: ["Flutter", "Express.js", "MongoDB", "Riverpod", "Secure Storage"],
     githubUrl: "https://github.com/bhanu250506/Mental_health_app/blob/main/README.md",
   },
 ];
 
 const ProjectsSection = () => {
   return (
-    // FIX: bg-transparent to show global particles
-    <section id="projects" className="py-32 px-4 relative bg-transparent">
+    // FIX: Optimized padding for mobile (py-16) vs desktop (py-32)
+    <section id="projects" className="py-16 md:py-24 lg:py-32 px-4 relative bg-transparent">
       <div className="container mx-auto max-w-6xl">
         
         {/* Header */}
@@ -80,18 +79,22 @@ const ProjectsSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white">
             Featured <span className="text-indigo-400">Projects</span>
           </h2>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+          <p className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg">
             A showcase of complex systems built with modern architecture.
           </p>
         </motion.div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Projects Grid 
+            Mobile: 1 Col
+            Tablet: 2 Cols
+            Desktop: 3 Cols
+        */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
@@ -100,13 +103,15 @@ const ProjectsSection = () => {
               transition={{ delay: index * 0.1, duration: 0.5 }}
               className="h-full"
             >
-              <SpotlightCard className="p-6 h-full hover:border-indigo-500/30 transition-colors group">
+              <SpotlightCard className="p-5 md:p-6 h-full hover:border-indigo-500/30 transition-colors group">
                 
-                {/* Card Header */}
+                {/* Card Header & Actions */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="p-3 bg-slate-800 rounded-xl border border-slate-700 group-hover:scale-110 transition-transform duration-300">
                     {project.icon}
                   </div>
+                  
+                  {/* Action Buttons (GitHub/Demo) */}
                   <div className="flex gap-2">
                     {project.githubUrl && (
                       <a 
@@ -135,7 +140,7 @@ const ProjectsSection = () => {
 
                 {/* Content */}
                 <div className="mb-6 flex-grow">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
                     {project.title}
                   </h3>
                   <p className="text-xs font-mono text-indigo-400 mb-3 uppercase tracking-wide">
@@ -151,7 +156,7 @@ const ProjectsSection = () => {
                   {project.tags.map((tag, i) => (
                     <span 
                       key={i} 
-                      className="px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/10"
+                      className="px-2 py-1 rounded-md text-[10px] md:text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/10"
                     >
                       {tag}
                     </span>
@@ -168,13 +173,13 @@ const ProjectsSection = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-center mt-16"
+          className="text-center mt-12 md:mt-16"
         >
           <a
             href="https://github.com/bhanu250506?tab=repositories"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-slate-900 border border-slate-700 text-slate-300 font-medium hover:bg-slate-800 hover:text-white hover:border-indigo-500/50 transition-all group"
+            className="inline-flex items-center justify-center px-6 py-3 md:px-8 md:py-3 rounded-full bg-slate-900 border border-slate-700 text-slate-300 text-sm md:text-base font-medium hover:bg-slate-800 hover:text-white hover:border-indigo-500/50 transition-all group"
           >
             View Full Project Archive 
             <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />

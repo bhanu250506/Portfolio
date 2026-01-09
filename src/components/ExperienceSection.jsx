@@ -44,10 +44,10 @@ const experiences = [
     description: "Leading security initiatives by orchestrating penetration testing and automating vulnerability scans.",
     achievements: [
       "Identified & remediated 15+ critical vulnerabilities.",
-      "Architected Spring Boot security patches to ensure data integrity.",
-      "Reduced manual audit cycles by 40% via automated scanning.",
+      "Architected Spring Boot security patches.",
+      "Reduced manual audit cycles by 40%.",
     ],
-    skills: ["Spring Boot", "Penetration Testing", "Burp Suite", "Java", "React", "Graphql"],
+    skills: ["Spring Boot", "Penetration Testing", "Burp Suite", "Java", "React"],
   },
   {
     company: "Healthletic Lifestyle",
@@ -57,8 +57,8 @@ const experiences = [
     description: "Engineered high-performance mobile solutions for the healthcare sector.",
     achievements: [
       "Built a medical care app using Flutter & GetX.",
-      "Optimized API integration via Dio for real-time sync.",
-      "Boosted user retention by 20% through performance debugging.",
+      "Optimized API integration via Dio.",
+      "Boosted user retention by 20%.",
     ],
     skills: ["Flutter", "GetX", "REST APIs", "Git-Flow"],
   },
@@ -69,9 +69,9 @@ const experiences = [
     location: "Remote",
     description: "Developed a full-scale LMS with offline capabilities and AI integration.",
     achievements: [
-      "Constructed an offline-first LMS app with real-time tracking.",
-      "Built a scalable Node.js/MongoDB backend for course delivery.",
-      "Integrated Google Gemini API for an AI student support chatbot.",
+      "Constructed an offline-first LMS app.",
+      "Built a scalable Node.js/MongoDB backend.",
+      "Integrated Google Gemini API.",
     ],
     skills: ["Flutter", "Node.js", "MongoDB", "Gemini AI"],
   },
@@ -79,7 +79,8 @@ const experiences = [
 
 export const ExperienceSection = () => {
   return (
-    <section id="experience" className="py-32 px-4 relative bg-transparent">
+    // FIX: Optimized padding: py-16 (Mobile) -> py-32 (Desktop)
+    <section id="experience" className="py-16 md:py-24 lg:py-32 px-4 relative bg-transparent">
       <div className="container mx-auto max-w-5xl">
         
         {/* Header */}
@@ -87,74 +88,82 @@ export const ExperienceSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white">
             Professional <span className="text-indigo-400">Journey</span>
           </h2>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+          <p className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg">
             A timeline of my technical contributions and internships.
           </p>
         </motion.div>
 
         <div className="relative">
           {/* Vertical Timeline Line */}
-          <div className="absolute left-0 md:left-8 top-0 bottom-0 w-px bg-slate-800" />
+          {/* Mobile: left-4 (16px), Desktop: left-8 (32px) */}
+          <div className="absolute left-4 md:left-8 top-0 bottom-0 w-px bg-slate-800" />
 
           {/* Experience Cards */}
-          <div className="space-y-12">
+          <div className="space-y-8 md:space-y-12">
             {experiences.map((exp, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
+                viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="relative pl-8 md:pl-24"
+                // Padding Left: pl-12 (Mobile) to pl-24 (Desktop) to clear the line
+                className="relative pl-12 md:pl-24"
               >
                 {/* Timeline Dot */}
-                <div className="absolute left-[-4px] md:left-[28px] top-6 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-slate-950 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+                {/* Calculated center: Line is at 16px (mobile). Dot is 10px wide. 16px - 5px + 0.5px center = ~11.5px */}
+                <div className="absolute left-[11.5px] md:left-[28px] top-6 md:top-8 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-slate-950 shadow-[0_0_10px_rgba(99,102,241,0.5)] z-10" />
 
-                <SpotlightCard className="p-6 md:p-8 group hover:border-indigo-500/30 transition-colors">
-                  <div className="flex flex-col md:flex-row gap-4 justify-between md:items-start mb-4">
+                <SpotlightCard className="p-5 md:p-8 group hover:border-indigo-500/30 transition-colors">
+                  
+                  {/* Card Header */}
+                  <div className="flex flex-col md:flex-row gap-2 md:gap-4 justify-between md:items-start mb-4">
                     <div>
-                      <h3 className="text-xl md:text-2xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                      <h3 className="text-lg md:text-2xl font-bold text-white group-hover:text-indigo-400 transition-colors leading-tight">
                         {exp.role}
                       </h3>
-                      <div className="text-lg font-medium text-slate-300 flex items-center gap-2 mt-1">
+                      <div className="text-base md:text-lg font-medium text-slate-300 flex items-center gap-2 mt-1 md:mt-2">
                         <Briefcase className="w-4 h-4 text-indigo-500" />
                         {exp.company}
                       </div>
                     </div>
                     
-                    <div className="flex flex-col gap-1 text-sm font-mono text-slate-500 md:text-right min-w-fit">
-                      <span className="flex items-center gap-2 md:justify-end">
-                        <Calendar className="w-4 h-4" /> {exp.period}
+                    {/* Metadata (Date/Location) */}
+                    {/* Mobile: Left aligned, Desktop: Right aligned */}
+                    <div className="flex flex-row md:flex-col gap-3 md:gap-1 text-xs md:text-sm font-mono text-slate-500 md:text-right mt-2 md:mt-0">
+                      <span className="flex items-center gap-1.5 md:justify-end">
+                        <Calendar className="w-3.5 h-3.5" /> {exp.period}
                       </span>
-                      <span className="flex items-center gap-2 md:justify-end">
-                        <MapPin className="w-4 h-4" /> {exp.location}
+                      <span className="flex items-center gap-1.5 md:justify-end">
+                        <MapPin className="w-3.5 h-3.5" /> {exp.location}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-slate-400 mb-6 leading-relaxed">
+                  <p className="text-sm md:text-base text-slate-400 mb-6 leading-relaxed">
                     {exp.description}
                   </p>
 
-                  <ul className="space-y-3 mb-6">
+                  <ul className="space-y-2 md:space-y-3 mb-6">
                     {exp.achievements.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-slate-300 text-sm">
+                      <li key={i} className="flex items-start gap-2.5 text-slate-300 text-xs md:text-sm">
                         <ArrowRight className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
 
+                  {/* Skills Tags */}
                   <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-800/50">
                     {exp.skills.map((skill, i) => (
                       <span 
                         key={i} 
-                        className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20"
+                        className="px-2.5 py-1 rounded-full text-[10px] md:text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20"
                       >
                         {skill}
                       </span>

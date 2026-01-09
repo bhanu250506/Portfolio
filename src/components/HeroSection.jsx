@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { 
   ArrowRight, Download, Terminal, Code2, 
   ShieldCheck, Smartphone, Coffee, Github, Linkedin, FileText, Code 
 } from "lucide-react";
-import { DeveloperBackground } from "./DeveloperBckground";
+import { DeveloperBackground } from "./DeveloperBckground"; // Ensure this path is correct
 
 // --- 1. TYPEWRITER COMPONENT ---
 const Typewriter = ({ words }) => {
@@ -36,35 +36,51 @@ const Typewriter = ({ words }) => {
   }, [subIndex, index, reverse, words]);
 
   return (
-    
-    <span className="inline-block min-w-[200px] text-left">
+    <span className="inline-block min-w-[140px] sm:min-w-[200px] text-left">
       {`${words[index].substring(0, subIndex)}`}
       <span className={`${blink ? "opacity-100" : "opacity-0"} ml-1 text-indigo-400`}>|</span>
     </span>
   );
 };
 
-// --- 2. 3D TILT COMPONENT ---
+// --- 2. 3D TILT COMPONENT (Mobile Optimized) ---
 const TiltContainer = ({ children }) => {
+  const ref = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const mouseX = useSpring(x, { stiffness: 150, damping: 15 });
-  const mouseY = useSpring(y, { stiffness: 150, damping: 15 });
+
+  // Softer springs for mobile to prevent jitter
+  const mouseX = useSpring(x, { stiffness: 50, damping: 20 });
+  const mouseY = useSpring(y, { stiffness: 50, damping: 20 });
+
   const rotateX = useTransform(mouseY, [-0.5, 0.5], ["15deg", "-15deg"]);
   const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-15deg", "15deg"]);
 
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  const handleMove = (clientX, clientY) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const xPos = (clientX - rect.left) / rect.width - 0.5;
+    const yPos = (clientY - rect.top) / rect.height - 0.5;
+    x.set(xPos);
+    y.set(yPos);
+  };
+
+  const handleMouseMove = (e) => handleMove(e.clientX, e.clientY);
+  const handleTouchMove = (e) => {
+    // Prevent scroll while interacting with 3D element (optional, typically better left enabled)
+    // e.preventDefault(); 
+    handleMove(e.touches[0].clientX, e.touches[0].clientY);
   };
 
   return (
     <motion.div
+      ref={ref}
       onMouseMove={handleMouseMove}
+      onTouchMove={handleTouchMove}
       onMouseLeave={() => { x.set(0); y.set(0); }}
+      onTouchEnd={() => { x.set(0); y.set(0); }}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center perspective-1000 cursor-pointer"
+      className="relative w-full aspect-square flex items-center justify-center perspective-1000 cursor-grab active:cursor-grabbing"
     >
       {children}
     </motion.div>
@@ -77,11 +93,11 @@ const SocialPill = ({ href, icon: Icon, label }) => (
     href={href} 
     target="_blank" 
     rel="noreferrer"
-    className="group relative flex items-center justify-center p-3 rounded-full bg-slate-900/50 border border-slate-700 hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all duration-300"
+    className="group relative flex items-center justify-center p-2 sm:p-3 rounded-full bg-slate-900/50 border border-slate-700 hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all duration-300"
     aria-label={label}
   >
-    <Icon className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
-    <span className="absolute -top-10 scale-0 group-hover:scale-100 px-2 py-1 bg-slate-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap border border-slate-700">
+    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-hover:text-white transition-colors" />
+    <span className="absolute -top-10 scale-0 group-hover:scale-100 px-2 py-1 bg-slate-800 text-xs text-white rounded opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap border border-slate-700 z-50">
       {label}
     </span>
   </a>
@@ -89,96 +105,87 @@ const SocialPill = ({ href, icon: Icon, label }) => (
 
 export const HeroSection = () => {
   return (
-    // FIX: Removed bg-slate-950, added bg-transparent
-    <section id="hero" className="relative min-h-screen flex items-center justify-center px-4 pt-20 overflow-hidden bg-transparent">
-       <div className="absolute inset-0 z-0">
+    // FIX: Changed min-h-screen to min-h-[100dvh] for mobile browsers
+    // Added overflow-x-hidden to prevent horizontal scrolling
+    <section id="hero" className="relative min-h-[100dvh] flex items-center justify-center pt-24 pb-12 sm:pt-20 overflow-x-hidden bg-transparent">
+      
+      {/* Background Layer */}
+      <div className="absolute inset-0 z-0">
         <DeveloperBackground />
       </div>
       
-      <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+      {/* Content Container */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center relative z-10">
         
-        {/* --- LEFT SIDE --- */}
+        {/* --- LEFT SIDE (Text) --- */}
+        {/* Order-2 on mobile (below image), Order-1 on Desktop */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center lg:text-left order-2 lg:order-1"
+          className="text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start"
         >
-       {/* Hire Badge */}
-<div className="flex justify-center lg:justify-start mb-6">
-  <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full 
-    border border-indigo-400/30 
-    bg-gradient-to-r from-indigo-500/10 via-indigo-400/10 to-purple-500/10
-    backdrop-blur-xl shadow-lg shadow-indigo-500/20">
+          {/* Hire Badge */}
+          <div className="mb-6">
+            <div className="relative inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 rounded-full border border-indigo-400/30 bg-indigo-500/10 backdrop-blur-xl shadow-lg shadow-indigo-500/20">
+              <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                <span className="relative inline-flex h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-emerald-500"></span>
+              </span>
+              <span className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">
+                Open to Opportunities
+              </span>
+            </div>
+          </div>
 
-    {/* Green animated status dot */}
-    <span className="relative flex h-2.5 w-2.5">
-      <span className="absolute inline-flex h-full w-full rounded-full 
-        bg-emerald-400 opacity-75 animate-ping"></span>
-      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-    </span>
+          {/* Name */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 text-white leading-tight">
+            Hi, I'm{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+              Bhanu 
+            </span>
+          </h1>
 
-    <span className="text-xs font-semibold tracking-widest uppercase 
-      bg-gradient-to-r from-indigo-300 to-purple-300 
-      bg-clip-text text-transparent">
-      Open to Opportunities
-    </span>
-  </div>
-</div>
+          {/* Roles */}
+          <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-slate-400 mb-6 h-8 sm:h-10 md:h-14">
+            Crafting{" "}
+            <span className="text-white block sm:inline">
+              <Typewriter
+                words={[
+                  "Secure Backends",
+                  "Scalable Apps",
+                  "Robust Systems",
+                ]}
+              />
+            </span>
+          </div>
 
+          {/* Description */}
+          <p className="text-sm sm:text-base md:text-lg text-slate-400 mb-8 max-w-md sm:max-w-xl lg:mx-0 leading-relaxed">
+            I’m a <span className="text-white font-medium">Full-Stack Developer</span> working across
+            <span className="text-indigo-400 font-medium"> Java, Node.js, React & Flutter</span> —
+            building secure, scalable systems from backend logic to user-friendly interfaces.
+          </p>
 
-      {/* Name */}
-<h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight mb-4 text-white leading-tight">
-  Hi, MySelf{" "}
-  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
-    Bhanu 
-  </span>{" "}
-  
-</h1>
-
-{/* Roles */}
-<div className="text-xl sm:text-2xl md:text-4xl font-semibold text-slate-400 mb-6 h-14">
-  Crafting{" "}
-  <span className="text-white">
-    <Typewriter
-      words={[
-        "secure Backend",
-        "scalable Mobile apps",
-        "security-first architecture",
-      ]}
-    />
-  </span>
-</div>
-
-
-{/* Description */}
-<p className="text-base sm:text-lg text-slate-400 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-  I’m a <span className="text-white font-medium">Full-Stack Developer</span> working across
-  <span className="text-indigo-400 font-medium"> Java, Node.js, React and Flutter</span> —
-  building secure, scalable systems from backend logic to user-friendly interfaces that
-  actually ship to production.
-</p>
-
-
-          {/* NEW: Social Dock */}
-          <div className="flex gap-4 justify-center lg:justify-start mb-10">
-             <SocialPill href="https://linkedin.com/in/bhanupratapsn" icon={Linkedin} label="LinkedIn" />
-             <SocialPill href="https://github.com/bhanu250506" icon={Github} label="GitHub" />
-             <SocialPill href="https://leetcode.com/u/bhanupratap2556/" icon={Code} label="LeetCode" />
-             <SocialPill href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" icon={FileText} label="Resume" />
+          {/* Social Dock */}
+          <div className="flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-4 mb-8 sm:mb-10">
+              <SocialPill href="https://linkedin.com/in/bhanupratapsn" icon={Linkedin} label="LinkedIn" />
+              <SocialPill href="https://github.com/bhanu250506" icon={Github} label="GitHub" />
+              <SocialPill href="https://leetcode.com/u/bhanupratap2556/" icon={Code} label="LeetCode" />
+              <SocialPill href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" icon={FileText} label="Resume" />
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <a 
               href="#projects" 
-              className="px-8 py-4 rounded-full bg-white text-slate-950 font-bold hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-white/10"
+              className="px-8 py-3.5 rounded-full bg-white text-slate-950 font-bold hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-white/10 text-sm sm:text-base"
             >
               View Work <ArrowRight className="w-4 h-4" />
             </a>
             <a 
               href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" 
-              className="px-8 py-4 rounded-full border border-slate-700 bg-slate-900/50 backdrop-blur-md text-white font-medium hover:border-indigo-500/50 hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+              className="px-8 py-3.5 rounded-full border border-slate-700 bg-slate-900/50 backdrop-blur-md text-white font-medium hover:border-indigo-500/50 hover:bg-slate-800 transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
             >
               <Download className="w-4 h-4" /> Download CV
             </a>
@@ -186,40 +193,53 @@ export const HeroSection = () => {
         </motion.div>
 
 
-        {/* --- RIGHT SIDE --- */}
-        <div className="order-1 lg:order-2 flex items-center justify-center py-10 lg:py-0">
-          <TiltContainer>
-            <div style={{ transform: "translateZ(0px)" }} className="absolute inset-0 bg-slate-900/20 border border-slate-700/30 backdrop-blur-sm rounded-3xl shadow-2xl" />
-            <div style={{ transform: "translateZ(-50px)" }} className="absolute inset-0 bg-indigo-500/20 rounded-full blur-[80px]" />
-            
-            {/* Icons */}
-            <motion.div style={{ transform: "translateZ(60px)" }} className="absolute top-10 left-1/2 -translate-x-1/2 p-4 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl flex flex-col items-center gap-2">
-              <div className="p-3 bg-orange-500/10 rounded-full"><Coffee className="w-8 h-8 text-orange-400" /></div>
-              <span className="text-xs font-bold text-slate-300">Java Dev</span>
-            </motion.div>
+        {/* --- RIGHT SIDE (Visual) --- */}
+        {/* Order-1 on mobile (visual first), Order-2 on Desktop */}
+        <div className="order-1 lg:order-2 flex items-center justify-center py-4 lg:py-0">
+          
+          {/* RESPONSIVE TRICK: 
+             1. We force the width to be fixed (w-80 or w-96) so the inner absolute math works.
+             2. We transform scale down on mobile (scale-75) so it doesn't overflow the screen.
+          */}
+          <div className="relative w-72 h-72 sm:w-96 sm:h-96 lg:w-[450px] lg:h-[450px]">
+            <TiltContainer>
+              {/* Glass Card Base */}
+              <div style={{ transform: "translateZ(0px)" }} className="absolute inset-0 bg-slate-900/20 border border-slate-700/30 backdrop-blur-sm rounded-3xl shadow-2xl" />
+              <div style={{ transform: "translateZ(-50px)" }} className="absolute inset-0 bg-indigo-500/20 rounded-full blur-[60px] sm:blur-[80px]" />
+              
+              {/* Floating Icons with adjusted positions for consistent scaling */}
+              
+              {/* Java - Top Center */}
+              <motion.div style={{ transform: "translateZ(60px)" }} className="absolute top-6 sm:top-10 left-1/2 -translate-x-1/2 p-3 sm:p-4 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl flex flex-col items-center gap-2">
+                <div className="p-2 sm:p-3 bg-orange-500/10 rounded-full"><Coffee className="w-6 h-6 sm:w-8 sm:h-8 text-orange-400" /></div>
+                <span className="text-[10px] sm:text-xs font-bold text-slate-300">Java Dev</span>
+              </motion.div>
 
-            <motion.div style={{ transform: "translateZ(80px)" }} className="absolute bottom-12 left-8 p-4 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl flex flex-col items-center gap-2">
-              <div className="p-3 bg-emerald-500/10 rounded-full"><Smartphone className="w-8 h-8 text-emerald-400" /></div>
-              <span className="text-xs font-bold text-slate-300">App Dev</span>
-            </motion.div>
+              {/* App Dev - Bottom Left */}
+              <motion.div style={{ transform: "translateZ(80px)" }} className="absolute bottom-8 sm:bottom-12 left-4 sm:left-8 p-3 sm:p-4 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl flex flex-col items-center gap-2">
+                <div className="p-2 sm:p-3 bg-emerald-500/10 rounded-full"><Smartphone className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-400" /></div>
+                <span className="text-[10px] sm:text-xs font-bold text-slate-300">App Dev</span>
+              </motion.div>
 
-            <motion.div style={{ transform: "translateZ(100px)" }} className="absolute bottom-16 right-8 p-4 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl flex flex-col items-center gap-2">
-              <div className="p-3 bg-cyan-500/10 rounded-full"><ShieldCheck className="w-8 h-8 text-cyan-400" /></div>
-              <span className="text-xs font-bold text-slate-300">Security</span>
-            </motion.div>
+              {/* Security - Bottom Right */}
+              <motion.div style={{ transform: "translateZ(100px)" }} className="absolute bottom-12 sm:bottom-16 right-4 sm:right-8 p-3 sm:p-4 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl flex flex-col items-center gap-2">
+                <div className="p-2 sm:p-3 bg-cyan-500/10 rounded-full"><ShieldCheck className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-400" /></div>
+                <span className="text-[10px] sm:text-xs font-bold text-slate-300">Security</span>
+              </motion.div>
 
-            {/* Code Snippet */}
-            <motion.div style={{ transform: "translateZ(40px)" }} className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
-              <pre className="text-[10px] text-indigo-300 font-mono leading-relaxed">
-{`class Bhanu {
+              {/* Code Snippet Background */}
+              <motion.div style={{ transform: "translateZ(40px)" }} className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
+                <pre className="text-[8px] sm:text-[10px] text-indigo-300 font-mono leading-relaxed">
+  {`class Bhanu {
   skills = [
    "Java", "Flutter",
    "CyberSec"
   ];
-}`}
-              </pre>
-            </motion.div>
-          </TiltContainer>
+  }`}
+                </pre>
+              </motion.div>
+            </TiltContainer>
+          </div>
         </div>
 
       </div>

@@ -37,7 +37,7 @@ const SpotlightCard = ({ children, className = "" }) => {
   );
 };
 
-// --- 2. SKILLS DATA (From Resume) ---
+// --- 2. SKILLS DATA ---
 const skillCategories = [
   {
     title: "Languages",
@@ -56,21 +56,21 @@ const skillCategories = [
   {
     title: "Backend Architecture",
     icon: <Server className="w-6 h-6 text-emerald-400" />,
-    skills: ["Spring Boot", "Node.js", "Express.js", "GraphQL","Golang", "REST APIs", "WebSockets", "Microservices"],
+    skills: ["Spring Boot", "Node.js", "Express.js", "GraphQL", "Golang", "REST APIs", "Microservices"],
     gradient: "from-emerald-500/10 to-teal-500/10",
     border: "group-hover:border-emerald-500/50"
   },
   {
     title: "Cyber Security",
     icon: <ShieldCheck className="w-6 h-6 text-red-400" />,
-    skills: ["OWASP Top 10", "Penetration Testing", "Burp Suite", "Nmap", "Nikto", "Vulnerability Management"],
+    skills: ["OWASP Top 10", "Penetration Testing", "Burp Suite", "Nmap", "Nikto", "Vuln Mgmt"],
     gradient: "from-red-500/10 to-orange-500/10",
     border: "group-hover:border-red-500/50"
   },
   {
     title: "DevOps & Tools",
     icon: <Wrench className="w-6 h-6 text-cyan-400" />,
-    skills: ["Git", "Docker", "Linux", "Postman", "Android Studio", "IntelliJ", "VS Code", "Gemini AI"],
+    skills: ["Git", "Docker", "Linux", "Postman", "Android Studio", "IntelliJ", "VS Code"],
     gradient: "from-cyan-500/10 to-sky-500/10",
     border: "group-hover:border-cyan-500/50"
   }
@@ -78,7 +78,8 @@ const skillCategories = [
 
 export const SkillsSection = () => {
   return (
-    <section id="skills" className="py-32 px-4 relative bg-transparent">
+    // FIX: Adjusted padding for mobile (py-16) vs desktop (py-32)
+    <section id="skills" className="py-16 md:py-24 lg:py-32 px-4 relative bg-transparent">
       <div className="container mx-auto max-w-6xl">
         
         {/* Header */}
@@ -86,18 +87,21 @@ export const SkillsSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white">
             Technical <span className="text-indigo-400">Arsenal</span>
           </h2>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+          <p className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg">
             A comprehensive toolset for building secure, scalable digital solutions.
           </p>
         </motion.div>
 
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Grid Layout 
+            Mobile: 1 col, Tablet: 2 cols, Desktop: 3 cols
+            6 Items total means perfect symmetry on all screens.
+        */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {skillCategories.map((category, idx) => (
             <motion.div
               key={idx}
@@ -106,6 +110,7 @@ export const SkillsSection = () => {
               transition={{ delay: idx * 0.1, duration: 0.5 }}
               className="h-full"
             >
+              {/* Card Padding adjusted: p-6 on mobile, p-8 on desktop */}
               <SpotlightCard className={`p-6 md:p-8 flex flex-col group transition-colors duration-300 ${category.border}`}>
                 
                 {/* Header */}
@@ -113,7 +118,7 @@ export const SkillsSection = () => {
                   <div className={`p-3 rounded-xl bg-gradient-to-br ${category.gradient} border border-white/10`}>
                     {category.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="text-lg sm:text-xl font-bold text-white">
                     {category.title}
                   </h3>
                 </div>
@@ -124,7 +129,7 @@ export const SkillsSection = () => {
                     <motion.span
                       key={i}
                       whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
-                      className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 cursor-default transition-colors hover:text-white hover:border-white/30"
+                      className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 cursor-default transition-colors hover:text-white hover:border-white/30"
                     >
                       {skill}
                     </motion.span>
@@ -135,7 +140,7 @@ export const SkillsSection = () => {
             </motion.div>
           ))}
 
-          {/* Bonus: "Learning Now" Card to fill the grid nicely */}
+          {/* Bonus: "Learning Now" Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -146,9 +151,9 @@ export const SkillsSection = () => {
                 <div className="p-4 rounded-full bg-purple-500/10 mb-4 animate-pulse">
                   <Cpu className="w-8 h-8 text-purple-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Always Evolving</h3>
-                <p className="text-slate-400 text-sm">
-                  Currently exploring <strong>System Design</strong> and <strong>Cloud Security Architecture</strong> to further enhance my engineering capabilities.
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Always Evolving</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  Currently exploring <strong>System Design</strong> and <strong>Cloud Security</strong> to further enhance my engineering capabilities.
                 </p>
              </SpotlightCard>
           </motion.div>

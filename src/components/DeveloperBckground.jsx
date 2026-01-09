@@ -8,72 +8,90 @@ export const DeveloperBackground = () => {
     const ctx = canvas.getContext("2d");
     let animationId;
     
-    // Configuration
-    const PARTICLE_COUNT = 70;
-    const CONNECT_DISTANCE = 110;
-    const MOUSE_RADIUS = 150;
+    // --- CONFIGURATION ---
+    const PARTICLE_COUNT = 60; // Slightly fewer particles to save performance for the glow
+    const CONNECT_DISTANCE = 120;
+    const MOUSE_RADIUS = 180;
+    const GLOW_INTENSITY = 15;
     
-    // Tech colors matching your screenshot (Cyan, Blue, Purple, White)
-    const COLORS = ["#64ffda", "#4facfe", "#a855f7", "#ffffff"];
-    const SYMBOLS = ["{ }", "</>", ";", "0", "1", "&&", "||", "[]"];
+    // Cyberpunk Palette
+    const COLORS = ["#00f3ff", "#bd00ff", "#00ff9d", "#ffffff"]; // Cyan, Purple, Neon Green, White
+    const SYMBOLS = ["{ }", "</>", ";", "0", "1", "&&", "||", "[]", "=>", "()"];
 
     const mouse = { x: null, y: null };
 
-    // Handle high-res displays
+    // Handle Resize
     const resize = () => {
-      const parent = canvas.parentElement;
-      if (parent) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
 
     class Particle {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 1.5; // Velocity X
-        this.vy = (Math.random() - 0.5) * 1.5; // Velocity Y
-        this.size = Math.random() * 2 + 1;
+        this.vx = (Math.random() - 0.5) * 0.8; // Slower, smoother movement
+        this.vy = (Math.random() - 0.5) * 0.8;
+        this.baseSize = Math.random() * 2 + 1;
+        this.size = this.baseSize;
         this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
         
-        // 20% chance to be a code symbol, 80% chance to be a dot
-        this.isSymbol = Math.random() > 0.8;
+        // Symbol Logic
+        this.isSymbol = Math.random() > 0.7; // 30% chance to be a code symbol
         this.symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        this.changeTimer = 0; // Timer to switch symbols
+        
+        // Pulse Logic
+        this.angle = Math.random() * Math.PI * 2; // Random starting angle for pulse
       }
 
       update() {
-        // Move
+        // 1. Move
         this.x += this.vx;
         this.y += this.vy;
 
-        // Bounce off edges
+        // 2. Bounce off edges
         if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
         if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
 
-        // Mouse Interaction (Repulsion)
+        // 3. Mouse Interaction (Repulsion + Attraction mix)
+        // We want them to gently float away but connect to mouse
         if (mouse.x != null) {
             let dx = mouse.x - this.x;
             let dy = mouse.y - this.y;
             let distance = Math.sqrt(dx * dx + dy * dy);
             
             if (distance < MOUSE_RADIUS) {
-                const forceDirectionX = dx / distance;
-                const forceDirectionY = dy / distance;
                 const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-                const directionX = forceDirectionX * force * 3;
-                const directionY = forceDirectionY * force * 3;
-
+                const directionX = (dx / distance) * force * 2; // Push away slightly
+                const directionY = (dy / distance) * force * 2;
                 this.x -= directionX;
                 this.y -= directionY;
             }
         }
+
+        // 4. "Decryption" Effect: Change symbol occasionally
+        if (this.isSymbol) {
+            this.changeTimer++;
+            if (this.changeTimer > 20 + Math.random() * 50) { // Random interval
+                this.symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                this.changeTimer = 0;
+            }
+        }
+
+        // 5. Pulse Effect (Breathing size)
+        this.angle += 0.05;
+        this.size = this.baseSize + Math.sin(this.angle) * 0.5;
       }
 
       draw() {
         ctx.beginPath();
+        // Add Glow
+        ctx.shadowBlur = GLOW_INTENSITY;
+        ctx.shadowColor = this.color;
+
         if (this.isSymbol) {
-            ctx.font = "14px monospace";
+            ctx.font = "12px monospace";
             ctx.fillStyle = this.color;
             ctx.fillText(this.symbol, this.x, this.y);
         } else {
@@ -81,6 +99,9 @@ export const DeveloperBackground = () => {
             ctx.fillStyle = this.color;
             ctx.fill();
         }
+        
+        // Reset shadow for performance (optional, but good practice)
+        ctx.shadowBlur = 0;
       }
     }
 
@@ -95,14 +116,13 @@ export const DeveloperBackground = () => {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Update and Draw Particles
       particles.forEach((particle) => {
         particle.update();
         particle.draw();
       });
 
-      // Draw Connections (The Network Effect)
       connectParticles();
+      connectToMouse(); // NEW: Connect particles to mouse cursor
 
       animationId = requestAnimationFrame(animate);
     };
@@ -115,9 +135,8 @@ export const DeveloperBackground = () => {
                 let distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance < CONNECT_DISTANCE) {
-                    // Calculate opacity based on distance (fade out as they get further)
                     let opacityValue = 1 - (distance / CONNECT_DISTANCE);
-                    ctx.strokeStyle = `rgba(100, 255, 218, ${opacityValue * 0.2})`; // Using the Cyan color with low opacity
+                    ctx.strokeStyle = `rgba(100, 243, 255, ${opacityValue * 0.15})`; // Cyan connections
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(particles[a].x, particles[a].y);
@@ -128,6 +147,27 @@ export const DeveloperBackground = () => {
         }
     };
 
+    const connectToMouse = () => {
+        if (mouse.x === null) return; // Mouse not on screen
+
+        for (let i = 0; i < particles.length; i++) {
+            let dx = mouse.x - particles[i].x;
+            let dy = mouse.y - particles[i].y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < MOUSE_RADIUS) {
+                let opacityValue = 1 - (distance / MOUSE_RADIUS);
+                // Brighter connection to mouse
+                ctx.strokeStyle = `rgba(189, 0, 255, ${opacityValue * 0.4})`; // Purple mouse lines
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.stroke();
+            }
+        }
+    }
+
     // Event Listeners
     window.addEventListener("resize", () => {
         resize();
@@ -135,11 +175,10 @@ export const DeveloperBackground = () => {
     });
     
     window.addEventListener("mousemove", (e) => {
-        mouse.x = e.x;
-        mouse.y = e.y;
+        mouse.x = e.clientX; // Changed to clientX for React compatibility
+        mouse.y = e.clientY;
     });
 
-    // Clear mouse when leaving window so particles settle
     window.addEventListener("mouseout", () => {
         mouse.x = null;
         mouse.y = null;
@@ -158,8 +197,8 @@ export const DeveloperBackground = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none -z-10 bg-transparent"
-      style={{ background: 'transparent' }} // Ensure canvas itself is transparent
+      className="fixed inset-0 pointer-events-none -z-10"
+      style={{ background: 'transparent' }} 
     />
   );
 };
