@@ -136,7 +136,6 @@ export const AboutSection = () => {
                  <div className="flex flex-wrap gap-2 mt-4">
                    <span className="text-xs px-2 py-1 bg-slate-800 rounded text-slate-400 border border-slate-700">LeetCode</span>
                    <span className="text-xs px-2 py-1 bg-slate-800 rounded text-slate-400 border border-slate-700">GeeksForGeeks</span>
-                   <span className="text-xs px-2 py-1 bg-slate-800 rounded text-slate-400 border border-slate-700">CodeChef</span>
                  </div>
               </div>
             </SpotlightCard>

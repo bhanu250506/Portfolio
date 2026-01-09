@@ -1,10 +1,56 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { 
-  ArrowRight, Download, Terminal, Code2, 
-  ShieldCheck, Smartphone, Coffee, Github, Linkedin, FileText, Code 
+  ArrowRight, Download, Terminal, 
+  ShieldCheck, Smartphone, Coffee, Github, Linkedin, FileText
 } from "lucide-react";
-import { DeveloperBackground } from "./DeveloperBckground"; // Ensure this path is correct
+import { DeveloperBackground } from "./DeveloperBckground"; 
+
+// --- 0. CUSTOM ICONS (Alphabet Style) ---
+
+// Custom GFG Icon
+const GFGIcon = ({ className }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    className={className}
+  >
+    <text 
+      x="12" 
+      y="16" 
+      textAnchor="middle" 
+      fontSize="10" 
+      fontWeight="900" 
+      fill="currentColor"
+      style={{ fontFamily: 'monospace' }}
+    >
+      GFG
+    </text>
+  </svg>
+);
+
+// Custom LeetCode Icon
+const LeetCodeIcon = ({ className }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    className={className}
+  >
+    <text 
+      x="12" 
+      y="16" 
+      textAnchor="middle" 
+      fontSize="12" 
+      fontWeight="900" 
+      fill="currentColor"
+      style={{ fontFamily: 'monospace' }}
+    >
+      LC
+    </text>
+  </svg>
+);
 
 // --- 1. TYPEWRITER COMPONENT ---
 const Typewriter = ({ words }) => {
@@ -43,13 +89,12 @@ const Typewriter = ({ words }) => {
   );
 };
 
-// --- 2. 3D TILT COMPONENT (Mobile Optimized) ---
+// --- 2. 3D TILT COMPONENT ---
 const TiltContainer = ({ children }) => {
   const ref = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Softer springs for mobile to prevent jitter
   const mouseX = useSpring(x, { stiffness: 50, damping: 20 });
   const mouseY = useSpring(y, { stiffness: 50, damping: 20 });
 
@@ -67,8 +112,6 @@ const TiltContainer = ({ children }) => {
 
   const handleMouseMove = (e) => handleMove(e.clientX, e.clientY);
   const handleTouchMove = (e) => {
-    // Prevent scroll while interacting with 3D element (optional, typically better left enabled)
-    // e.preventDefault(); 
     handleMove(e.touches[0].clientX, e.touches[0].clientY);
   };
 
@@ -105,8 +148,6 @@ const SocialPill = ({ href, icon: Icon, label }) => (
 
 export const HeroSection = () => {
   return (
-    // FIX: Changed min-h-screen to min-h-[100dvh] for mobile browsers
-    // Added overflow-x-hidden to prevent horizontal scrolling
     <section id="hero" className="relative min-h-[100dvh] flex items-center justify-center pt-24 pb-12 sm:pt-20 overflow-x-hidden bg-transparent">
       
       {/* Background Layer */}
@@ -118,7 +159,6 @@ export const HeroSection = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center relative z-10">
         
         {/* --- LEFT SIDE (Text) --- */}
-        {/* Order-2 on mobile (below image), Order-1 on Desktop */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -171,7 +211,11 @@ export const HeroSection = () => {
           <div className="flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-4 mb-8 sm:mb-10">
               <SocialPill href="https://linkedin.com/in/bhanupratapsn" icon={Linkedin} label="LinkedIn" />
               <SocialPill href="https://github.com/bhanu250506" icon={Github} label="GitHub" />
-              <SocialPill href="https://leetcode.com/u/bhanupratap2556/" icon={Code} label="LeetCode" />
+              
+              {/* UPDATED: Using Custom Icons */}
+              <SocialPill href="https://leetcode.com/u/bhanupratap2556/" icon={LeetCodeIcon} label="LeetCode" />
+              <SocialPill href="https://www.geeksforgeeks.org/profile/bhanupraalj9?tab=activity" icon={GFGIcon} label="GFG" />
+              
               <SocialPill href="https://drive.google.com/file/d/1lTIFQTyUJqwCMYCTaAIOIvWr9LnUbGrN/view?usp=sharing" icon={FileText} label="Resume" />
           </div>
 
@@ -194,20 +238,11 @@ export const HeroSection = () => {
 
 
         {/* --- RIGHT SIDE (Visual) --- */}
-        {/* Order-1 on mobile (visual first), Order-2 on Desktop */}
         <div className="order-1 lg:order-2 flex items-center justify-center py-4 lg:py-0">
-          
-          {/* RESPONSIVE TRICK: 
-             1. We force the width to be fixed (w-80 or w-96) so the inner absolute math works.
-             2. We transform scale down on mobile (scale-75) so it doesn't overflow the screen.
-          */}
           <div className="relative w-72 h-72 sm:w-96 sm:h-96 lg:w-[450px] lg:h-[450px]">
             <TiltContainer>
-              {/* Glass Card Base */}
               <div style={{ transform: "translateZ(0px)" }} className="absolute inset-0 bg-slate-900/20 border border-slate-700/30 backdrop-blur-sm rounded-3xl shadow-2xl" />
               <div style={{ transform: "translateZ(-50px)" }} className="absolute inset-0 bg-indigo-500/20 rounded-full blur-[60px] sm:blur-[80px]" />
-              
-              {/* Floating Icons with adjusted positions for consistent scaling */}
               
               {/* Java - Top Center */}
               <motion.div style={{ transform: "translateZ(60px)" }} className="absolute top-6 sm:top-10 left-1/2 -translate-x-1/2 p-3 sm:p-4 bg-slate-950 border border-slate-800 rounded-2xl shadow-xl flex flex-col items-center gap-2">
