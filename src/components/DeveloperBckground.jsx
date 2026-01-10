@@ -5,183 +5,164 @@ export const DeveloperBackground = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let animationId;
-    
+    let resizeTimeout;
+
     // --- CONFIGURATION ---
-    const PARTICLE_COUNT = 60; // Slightly fewer particles to save performance for the glow
-    const CONNECT_DISTANCE = 120;
-    const MOUSE_RADIUS = 180;
-    const GLOW_INTENSITY = 15;
-    
-    // Cyberpunk Palette
-    const COLORS = ["#00f3ff", "#bd00ff", "#00ff9d", "#ffffff"]; // Cyan, Purple, Neon Green, White
-    const SYMBOLS = ["{ }", "</>", ";", "0", "1", "&&", "||", "[]", "=>", "()"];
+    const CONFIG = {
+      particleCount: 50, // Reduced from 80 for better performance
+      connectionDistance: 150,
+      connectionDistanceSq: 150 * 150, // Pre-calculated squared distance
+      mouseInteractionRadius: 200,
+      mouseInteractionRadiusSq: 200 * 200,
+      baseSpeed: 0.6,
+      colors: ["#00f3ff", "#bc13fe", "#00ff9d"], 
+      symbols: ["{ }", "</>", ";", "0", "1", "&&", "||", "[]"],
+    };
 
-    const mouse = { x: null, y: null };
+    let mouse = { x: -1000, y: -1000 };
 
-    // Handle Resize
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
+    // Debounce resize to prevent lag when resizing window
+    const handleResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            resize();
+            init();
+        }, 100);
+    };
+
     class Particle {
       constructor() {
+        this.reset();
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 0.8; // Slower, smoother movement
-        this.vy = (Math.random() - 0.5) * 0.8;
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
         this.baseSize = Math.random() * 2 + 1;
-        this.size = this.baseSize;
-        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-        
-        // Symbol Logic
-        this.isSymbol = Math.random() > 0.7; // 30% chance to be a code symbol
-        this.symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-        this.changeTimer = 0; // Timer to switch symbols
-        
-        // Pulse Logic
-        this.angle = Math.random() * Math.PI * 2; // Random starting angle for pulse
+        this.vx = (Math.random() - 0.5) * CONFIG.baseSpeed;
+        this.vy = (Math.random() - 0.5) * CONFIG.baseSpeed;
+        this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
+        this.isSymbol = Math.random() > 0.7; // Less symbols, more dots (faster to draw)
+        this.symbol = CONFIG.symbols[Math.floor(Math.random() * CONFIG.symbols.length)];
       }
 
       update() {
-        // 1. Move
         this.x += this.vx;
         this.y += this.vy;
 
-        // 2. Bounce off edges
+        // Bounce off edges
         if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
         if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-
-        // 3. Mouse Interaction (Repulsion + Attraction mix)
-        // We want them to gently float away but connect to mouse
-        if (mouse.x != null) {
-            let dx = mouse.x - this.x;
-            let dy = mouse.y - this.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < MOUSE_RADIUS) {
-                const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-                const directionX = (dx / distance) * force * 2; // Push away slightly
-                const directionY = (dy / distance) * force * 2;
-                this.x -= directionX;
-                this.y -= directionY;
-            }
-        }
-
-        // 4. "Decryption" Effect: Change symbol occasionally
-        if (this.isSymbol) {
-            this.changeTimer++;
-            if (this.changeTimer > 20 + Math.random() * 50) { // Random interval
-                this.symbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-                this.changeTimer = 0;
-            }
-        }
-
-        // 5. Pulse Effect (Breathing size)
-        this.angle += 0.05;
-        this.size = this.baseSize + Math.sin(this.angle) * 0.5;
       }
 
       draw() {
-        ctx.beginPath();
-        // Add Glow
-        ctx.shadowBlur = GLOW_INTENSITY;
-        ctx.shadowColor = this.color;
+        ctx.fillStyle = this.color;
+        
+        // Removed ShadowBlur (Expensive!)
+        // Removed GlobalCompositeOperation (Expensive!)
 
         if (this.isSymbol) {
             ctx.font = "12px monospace";
-            ctx.fillStyle = this.color;
             ctx.fillText(this.symbol, this.x, this.y);
         } else {
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.baseSize, 0, Math.PI * 2);
             ctx.fill();
         }
-        
-        // Reset shadow for performance (optional, but good practice)
-        ctx.shadowBlur = 0;
       }
     }
 
     let particles = [];
     const init = () => {
       particles = [];
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
+      for (let i = 0; i < CONFIG.particleCount; i++) {
         particles.push(new Particle());
       }
     };
 
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach((particle) => {
-        particle.update();
-        particle.draw();
-      });
-
-      connectParticles();
-      connectToMouse(); // NEW: Connect particles to mouse cursor
-
-      animationId = requestAnimationFrame(animate);
-    };
-
-    const connectParticles = () => {
+    const drawConnections = () => {
+        // Optimization: Standard Loop
         for (let a = 0; a < particles.length; a++) {
-            for (let b = a; b < particles.length; b++) {
+            for (let b = a + 1; b < particles.length; b++) {
+                
+                // 1. Simple Box Check (Fastest rejection)
+                // If x distance is already too big, don't calculate math
                 let dx = particles[a].x - particles[b].x;
+                if (dx > CONFIG.connectionDistance || dx < -CONFIG.connectionDistance) continue;
+                
                 let dy = particles[a].y - particles[b].y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (dy > CONFIG.connectionDistance || dy < -CONFIG.connectionDistance) continue;
 
-                if (distance < CONNECT_DISTANCE) {
-                    let opacityValue = 1 - (distance / CONNECT_DISTANCE);
-                    ctx.strokeStyle = `rgba(100, 243, 255, ${opacityValue * 0.15})`; // Cyan connections
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.moveTo(particles[a].x, particles[a].y);
-                    ctx.lineTo(particles[b].x, particles[b].y);
-                    ctx.stroke();
+                // 2. Squared Distance (Avoids expensive Math.sqrt)
+                let distSq = dx * dx + dy * dy;
+
+                if (distSq < CONFIG.connectionDistanceSq) {
+                    // Check Mouse Proximity
+                    let midX = (particles[a].x + particles[b].x) / 2;
+                    let midY = (particles[a].y + particles[b].y) / 2;
+                    let mouseDx = midX - mouse.x;
+                    let mouseDy = midY - mouse.y;
+                    let mouseDistSq = mouseDx * mouseDx + mouseDy * mouseDy;
+
+                    let alpha = 0;
+
+                    if (mouseDistSq < CONFIG.mouseInteractionRadiusSq) {
+                         // High visibility near mouse
+                         alpha = 1 - (distSq / CONFIG.connectionDistanceSq);
+                         // Optional: Add extra boost based on mouse proximity
+                         alpha = Math.min(alpha + 0.3, 1); 
+                         ctx.strokeStyle = `rgba(0, 243, 255, ${alpha})`;
+                         ctx.lineWidth = 1;
+                    } else {
+                         // Very faint visibility elsewhere (or 0 to hide completely)
+                         alpha = 1 - (distSq / CONFIG.connectionDistanceSq);
+                         if (alpha > 0.8) { // Only draw the very closest lines
+                            ctx.strokeStyle = `rgba(100, 100, 100, ${alpha * 0.15})`;
+                            ctx.lineWidth = 0.5;
+                         } else {
+                            continue; // Skip drawing if too faint
+                         }
+                    }
+
+                    if (alpha > 0) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
                 }
             }
         }
     };
 
-    const connectToMouse = () => {
-        if (mouse.x === null) return; // Mouse not on screen
+    const animate = () => {
+      // Use clearRect instead of fillRect for maximum FPS
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        for (let i = 0; i < particles.length; i++) {
-            let dx = mouse.x - particles[i].x;
-            let dy = mouse.y - particles[i].y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
+      particles.forEach((particle) => {
+        particle.update();
+        particle.draw();
+      });
 
-            if (distance < MOUSE_RADIUS) {
-                let opacityValue = 1 - (distance / MOUSE_RADIUS);
-                // Brighter connection to mouse
-                ctx.strokeStyle = `rgba(189, 0, 255, ${opacityValue * 0.4})`; // Purple mouse lines
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(mouse.x, mouse.y);
-                ctx.stroke();
-            }
-        }
-    }
+      drawConnections();
+      animationId = requestAnimationFrame(animate);
+    };
 
-    // Event Listeners
-    window.addEventListener("resize", () => {
-        resize();
-        init();
-    });
+    window.addEventListener("resize", handleResize);
     
     window.addEventListener("mousemove", (e) => {
-        mouse.x = e.clientX; // Changed to clientX for React compatibility
+        mouse.x = e.clientX;
         mouse.y = e.clientY;
-    });
-
-    window.addEventListener("mouseout", () => {
-        mouse.x = null;
-        mouse.y = null;
     });
 
     resize();
@@ -190,15 +171,15 @@ export const DeveloperBackground = () => {
 
     return () => {
       cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resize);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none -z-10"
-      style={{ background: 'transparent' }} 
+      className="fixed inset-0 pointer-events-none -z-10 bg-slate-950"
     />
   );
 };

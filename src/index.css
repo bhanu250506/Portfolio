@@ -159,6 +159,17 @@
   box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.3);
 }
 
+body {
+  background-color: #020617; /* This matches tailwind's slate-950 */
+  color: white;
+}
+/* In index.css or global.css */
+body {
+  background-color: #020617; /* Tailwind slate-950 */
+  color: white; /* Ensures text is visible by default */
+  margin: 0;
+  padding: 0;
+}
 #root {
   max-width: 100%;
   margin: 0 auto;
